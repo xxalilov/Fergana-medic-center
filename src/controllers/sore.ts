@@ -1,8 +1,14 @@
-import {asyncHandler, NotFoundError, Request, Response, Sore} from './controller';
+import {asyncHandler, NotFoundError, Request, Response, Sore, User} from './controller';
 
 export const createSore = asyncHandler(async (req: Request, res: Response) => {
-    const sore = await Sore.create(req.body);
-    await sore.save();
+    const user = await User.findOne({where: {id: req.params.id}});
+    if (!user) throw new NotFoundError("User not found.");
+    const queue = user.soreQueue;
+    const setQueue = queue + 1;
+    await user.update({soreQueue: setQueue});
+    await user.save();
+    req.body.queue = setQueue;
+    const sore = await user.createSore(req.body);
 
     res.status(201).json({
         status: 201,

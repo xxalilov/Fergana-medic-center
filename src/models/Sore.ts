@@ -1,4 +1,5 @@
-import {Model, DataTypes} from "sequelize";
+import {Model, DataTypes, ForeignKey} from "sequelize";
+import User from "./User";
 import sequelize from "../utils/db";
 
 class Sore extends Model {
@@ -6,6 +7,7 @@ class Sore extends Model {
     declare name: string;
     declare phone: string;
     declare room: string;
+    declare doctor: ForeignKey<User["id"]>;
 }
 
 Sore.init({
@@ -22,9 +24,19 @@ Sore.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    type: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
     room: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    queue: {
+        type: DataTypes.INTEGER
+    },
+    isQueue: {
+        type: DataTypes.BOOLEAN
     }
 }, {
     tableName: "sore",

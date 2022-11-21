@@ -16,7 +16,7 @@ export const signin = asyncHandler(async (req: Request, res: Response) => {
     if (!currentUser) {
         const login = config.ADMIN_LOGIN;
         const password = config.ADMIN_PASSWORD;
-        const role = 'admin';
+        const role = 'superadmin';
 
         const user = await User.create({login, password, role});
 

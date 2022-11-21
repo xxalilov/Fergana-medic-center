@@ -39,7 +39,7 @@ export const adminProtect = asyncHandler(async (req: Request, res: Response, nex
 
     try {
         const decoded = jwt.verify(token, config.JWT_SECRET) as UserPayload;
-        if (decoded.role == 'admin') {
+        if (decoded.role == 'admin' || decoded.role == 'superadmin') {
             req.user = decoded;
             next();
         } else {

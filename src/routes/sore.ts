@@ -1,10 +1,10 @@
 import {Router} from "express";
-import {adminProtect} from "../middlewares/auth";
+import {adminProtect, superadmin} from "../middlewares/auth";
 import {createSore, deleteSore, getSore, getSores, updateSore} from "../controllers/sore";
 
 const router = Router();
 
-router.route("/").post(adminProtect, createSore).get(getSores);
-router.route("/:id").get(getSore).put(updateSore).delete(deleteSore);
+router.route("/").get(adminProtect, getSores);
+router.route("/:id").post(adminProtect, createSore).get(adminProtect, getSore).put(adminProtect, updateSore).delete(superadmin, deleteSore);
 
 export {router as soreRoutes}

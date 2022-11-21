@@ -1,4 +1,5 @@
-import {Model, DataTypes} from "sequelize";
+import {Model, DataTypes, HasManyCreateAssociationMixin} from "sequelize";
+import Sore from './Sore';
 import sequelize from "../utils/db";
 import {Password} from "../utils/password";
 
@@ -15,6 +16,8 @@ class User extends Model {
     declare consultationFee: string;
     declare salary: string;
     declare role: string;
+    declare soreQueue: number;
+    declare createSore: HasManyCreateAssociationMixin<Sore, "id">;
 }
 
 User.init(
@@ -53,6 +56,10 @@ User.init(
         role: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        soreQueue: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         }
     },
     {
