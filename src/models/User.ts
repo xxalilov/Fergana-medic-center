@@ -8,7 +8,7 @@ class User extends Model {
     declare name: string;
     declare login: string;
     declare password: string;
-    declare age: number;
+    declare birthday: string;
     declare degree: string;
     declare workExperience: string;
     declare image: string;
@@ -40,8 +40,8 @@ User.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        age: {
-            type: DataTypes.INTEGER,
+        birthday: {
+            type: DataTypes.STRING,
             allowNull: true
         },
         degree: {

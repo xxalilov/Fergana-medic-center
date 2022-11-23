@@ -69,12 +69,22 @@ export const updateUsersLoginAndPassword = asyncHandler(async (req: Request, res
 
     if (req.body.login) {
         const currentLogin = await User.findOne({where: {login: req.body.login}});
-        if (currentLogin) {
+        if (currentLogin?.login && currentLogin.login !== req.body.login) {
             throw new BadRequestError("Login already existing.")
         }
         await user.update({login: req.body.login});
         await user.save();
     }
+
+    if (req.file) {
+        if (user.image) deleteFile(user.image);
+        req.body.image = req.file.path;
+    }
+
+    await user.update(req.body);
+    await user.save();
+
+    
 
     res.status(200).json({
         status: 200,
