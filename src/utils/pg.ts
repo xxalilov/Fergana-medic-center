@@ -1,13 +1,40 @@
 import sequelize from "./db";
-import User from "../models/User";
 import Sore from "../models/Sore";
+import Reservation from "../models/Reservation";
+import Statistic from "../models/Statistic";
+import Category from "../models/Category";
 
 const db = async function () {
-    User.hasMany(Sore, {
+    Statistic.hasMany(Category, {
         sourceKey: "id",
-        foreignKey: "sore",
-        as: "sore"
+        foreignKey: "statisticId",
+        as: "category"
+    });
+    Category.belongsTo(Statistic, {
+        foreignKey: "statisticId",
+        as: "statistic"
+    });
+
+    Category.hasMany(Reservation, {
+        sourceKey: 'id',
+        foreignKey: 'slug',
+        as: 'reservation'
+    });
+    Reservation.belongsTo(Category, {
+        foreignKey: 'slug',
+        as: 'category'
     })
+
+    Sore.hasMany(Reservation, {
+       sourceKey: "id",
+       foreignKey: "soreId",
+       as: "reservation" 
+    });
+
+    Reservation.belongsTo(Sore, {
+        foreignKey: 'soreId',
+        as: 'sore'
+    });
 
     try {
         await sequelize.sync({force: false});

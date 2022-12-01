@@ -14,10 +14,10 @@ class User extends Model {
     declare image: string;
     declare profession: string;
     declare consultationFee: string;
-    declare salary: string;
+    declare salary: string; 
+    declare room: string;
     declare role: string;
     declare soreQueue: number;
-    declare createSore: HasManyCreateAssociationMixin<Sore, "id">;
 }
 
 User.init(
@@ -53,8 +53,12 @@ User.init(
         profession: DataTypes.STRING,
         consultationFee: DataTypes.STRING,
         salary: DataTypes.STRING,
+        room: {
+            type: DataTypes.STRING,
+        },
         role: {
             type: DataTypes.STRING,
+            defaultValue: 'user',
             allowNull: false,
         },
         soreQueue: {

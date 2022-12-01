@@ -1,7 +1,13 @@
-import {asyncHandler, Response, Request, Category, BadRequestError} from "./controller";
+import {asyncHandler, Response, Request, Category, BadRequestError, Statistic} from "./controller";
 
 export const createCategory = asyncHandler(async (req: Request, res: Response) => {
-    const category = await Category.create(req.body);
+    
+    let statistic = await Statistic.findOne();
+    if(!statistic){
+      statistic = await Statistic.create();
+      statistic.save();
+    }
+    const category = await statistic.createCategory(req.body)
     await category.save();
 
     res.status(201).json({

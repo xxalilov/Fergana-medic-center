@@ -1,29 +1,90 @@
-import {asyncHandler, NotFoundError, Request, Response, Sore, User} from './controller';
+import {asyncHandler, NotFoundError, Request, Response, Sore, User, Reservation, Statistic} from './controller';
 
 export const createSore = asyncHandler(async (req: Request, res: Response) => {
+    const sore = await Sore.findOne({where: {phone: req.body.phone}});
     const user = await User.findOne({where: {id: req.params.id}});
     if (!user) throw new NotFoundError("User not found.");
-    const queue = user.soreQueue;
-    const setQueue = queue + 1;
-    await user.update({soreQueue: setQueue});
-    await user.save();
-    req.body.queue = setQueue;
-    const sore = await user.createSore(req.body);
+    const soreCount = await Sore.count();
+    req.body.idNumber = soreCount+1;
+    req.body.room = user.room;
+    req.body.fee = user.consultationFee;
+    req.body.doctor = user.id;
+    req.body.doctorName = user.name;
+    req.body.type = user.profession;
+    req.body.room = user.room;
+    
+    let currentSore;
+    if(sore) {
+        const reservation = await sore.createReservation(req.body);
+        await reservation.save();
+        currentSore = sore;
+    } else {
+        const newSore = await Sore.create(req.body);
+        await newSore.save();
+        const statistic = await Statistic.findOne();
+        if(!statistic) await Statistic.create({patients: 1});
+        statistic?.update({patients: statistic.patients + 1})
+        const reservation = await newSore.createReservation(req.body);
+        await reservation.save();
+        currentSore = newSore;
+    }
+
+    const data = await Sore.findOne({where: {id: currentSore.id}, include: [{model: Reservation, as: 'reservation', where: {isPaid: false}}]});
 
     res.status(201).json({
         status: 201,
-        data: sore
+        data
     })
 });
 
 export const getSores = asyncHandler(async (req: Request, res: Response) => {
-    const sore = await Sore.findAll();
+    let query;
+    if(req.query) {
+        query=req.query;
+    }
+    const sore = await Sore.findAll({where: query});
 
     res.status(200).json({
         status: 200,
         data: sore
     })
 });
+
+export const getSoresForCachier = asyncHandler(async (req: Request, res: Response) => {
+    let query;
+    if(req.query) {
+        query=req.query;
+    }
+    let sore = await Sore.findOne({where: query, include: [{model: Reservation, as: 'reservation', where: {isPaid: false,}}]});
+
+    if(!sore) {
+        sore = await Sore.findOne({where: query})
+    }
+
+    if(!sore) throw new NotFoundError("Berilgan Id orqali bemor topilmadi.")
+
+    res.status(200).json({
+        status: 200,
+        data: sore
+        
+    })
+});
+
+export const getSoresForDoctors = asyncHandler(async (req: Request, res: Response) => {
+    let query;
+    if(req.query) {
+        query=req.query;
+    }
+    let sore = await Sore.findAll({include: [{model: Reservation, as: 'reservation', where: {doctor: req.user?.id, isPaid: true, isQueue: true}}]});
+
+    if(!sore) throw new NotFoundError("Berilgan Id orqali bemor topilmadi.")
+
+    res.status(200).json({
+        status: 200,
+        data: sore
+        
+    })
+})
 
 export const getSore = asyncHandler(async (req: Request, res: Response) => {
     const sore = await Sore.findOne({where: {id: req.params.id}});
@@ -52,6 +113,9 @@ export const deleteSore = asyncHandler(async (req: Request, res: Response) => {
     const sore = await Sore.findOne({where: {id: req.params.id}});
     if (!sore) throw new NotFoundError("Berilgan Id orqali bemor topilmadi.");
     await sore.destroy();
+
+    const statistic = await Statistic.findOne();
+    statistic?.update({patients: statistic.patients - 1})
 
     res.status(200).json({
         status: 200,

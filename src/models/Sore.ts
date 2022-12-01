@@ -1,13 +1,13 @@
-import {Model, DataTypes, ForeignKey} from "sequelize";
-import User from "./User";
+import {Model, DataTypes, HasManyCreateAssociationMixin} from "sequelize";
 import sequelize from "../utils/db";
+import Reservation from "./Reservation";
 
 class Sore extends Model {
     declare id: string;
     declare name: string;
     declare phone: string;
-    declare room: string;
-    declare doctor: ForeignKey<User["id"]>;
+    declare idNumber: number;
+    declare createReservation: HasManyCreateAssociationMixin<Reservation, "id">;
 }
 
 Sore.init({
@@ -24,19 +24,9 @@ Sore.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    type: {
-        type: DataTypes.STRING,
+    idNumber: {
+        type: DataTypes.INTEGER,
         allowNull: false
-    },
-    room: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    queue: {
-        type: DataTypes.INTEGER
-    },
-    isQueue: {
-        type: DataTypes.BOOLEAN
     }
 }, {
     tableName: "sore",

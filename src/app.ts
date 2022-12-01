@@ -11,6 +11,7 @@ import {authRoutes} from "./routes/auth";
 import {userRoutes} from "./routes/user";
 import {categoryRoutes} from "./routes/category";
 import {soreRoutes} from "./routes/sore";
+import { reservationRoutes } from "./routes/reservation";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/category', categoryRoutes);
 app.use('/api/v1/sore', soreRoutes);
+app.use('/api/v1/reservation', reservationRoutes);
 app.all("*", asyncHandler(async () => {
     throw new NotFoundError("Route Not Found.")
 }))

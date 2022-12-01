@@ -2,7 +2,9 @@ import {Request, Response, NextFunction} from "express";
 import crypto from "crypto";
 import User from "../models/User";
 import Category from "../models/Category";
-import Sore from '../models/Sore'
+import Sore from '../models/Sore';
+import Reservation from "../models/Reservation";
+import Statistic from "../models/Statistic";
 import jwt from "jsonwebtoken";
 import {asyncHandler} from "../middlewares/async";
 import config from "../config/config";
@@ -21,6 +23,8 @@ export {
     User,
     Category,
     Sore,
+    Reservation,
+    Statistic,
     jwt,
     asyncHandler,
     config,

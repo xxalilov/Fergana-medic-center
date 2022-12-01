@@ -39,7 +39,7 @@ export const adminProtect = asyncHandler(async (req: Request, res: Response, nex
 
     try {
         const decoded = jwt.verify(token, config.JWT_SECRET) as UserPayload;
-        if (decoded.role == 'admin' || decoded.role == 'superadmin') {
+        if (decoded.role == 'admin' || decoded.role == 'superadmin' || decoded.role == 'cachier') {
             req.user = decoded;
             next();
         } else {
@@ -49,7 +49,24 @@ export const adminProtect = asyncHandler(async (req: Request, res: Response, nex
     } catch (err) {
         throw new UnauthorizedError("No authorize to access this route");
     }
-})
+});
+
+export const doctorProtect = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    let token = getToken(req);
+
+    try {
+        const decoded = jwt.verify(token, config.JWT_SECRET) as UserPayload;
+        if (decoded.role == 'superadmin' || decoded.role == 'user') {
+            req.user = decoded;
+            next();
+        } else {
+            throw new UnauthorizedError("No authorize to access this route");
+        }
+
+    } catch (err) {
+        throw new UnauthorizedError("No authorize to access this route");
+    }
+});
 
 export const protect = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {

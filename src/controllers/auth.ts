@@ -23,7 +23,7 @@ export const signin = asyncHandler(async (req: Request, res: Response) => {
         await user.save();
 
         if (user.login !== req.body.login) {
-            throw new BadRequestError('Email yoki parol xato kiritdingiz!');
+            throw new BadRequestError('Email yoki parolni xato kiritdingiz!');
         }
 
         const matchPassword = await Password.compare(
@@ -32,7 +32,7 @@ export const signin = asyncHandler(async (req: Request, res: Response) => {
         );
 
         if (!matchPassword) {
-            throw new BadRequestError('Email yoki parol xato kiritdingiz!');
+            throw new BadRequestError('Email yoki parolni xato kiritdingiz!');
         }
 
         return sendTokenResponse(user, 201, res);
@@ -41,14 +41,14 @@ export const signin = asyncHandler(async (req: Request, res: Response) => {
     const user = await User.findOne({where: {login: req.body.login}});
 
     if (!user) {
-        throw new BadRequestError('Email yoki parol xato  kiritdingiz!');
+        throw new BadRequestError('Email yoki parolni xato  kiritdingiz!');
     }
 
+    
     const matchPassword = await Password.compare(
         user.password,
         req.body.password,
-    );
-
+        );
     if (!matchPassword) {
         throw new BadRequestError('Email yoki parol xato  kiritdingiz!');
     }
