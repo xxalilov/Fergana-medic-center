@@ -7,7 +7,7 @@ class Category extends Model {
     declare id: string;
     declare category: string;
     declare slug: string;
-    declare statisticId: ForeignKey<Statistic['id']>
+    // declare statisticId: ForeignKey<Statistic['id']>
 }
 
 Category.init({

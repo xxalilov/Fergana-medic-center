@@ -2,12 +2,12 @@ import {asyncHandler, Response, Request, Category, BadRequestError, Statistic} f
 
 export const createCategory = asyncHandler(async (req: Request, res: Response) => {
     
-    let statistic = await Statistic.findOne();
-    if(!statistic){
-      statistic = await Statistic.create();
-      statistic.save();
-    }
-    const category = await statistic.createCategory(req.body)
+    // let statistic = await Statistic.findOne();
+    // if(!statistic){
+    //   statistic = await Statistic.create();
+    //   statistic.save();
+    // }
+    const category = await Category.create(req.body)
     await category.save();
 
     res.status(201).json({

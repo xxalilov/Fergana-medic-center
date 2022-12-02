@@ -7,7 +7,7 @@ class Statistic extends Model {
     declare users: number;
     declare balance: number;
     declare patients: number;
-    declare createCategory: HasManyCreateAssociationMixin<Category, "id">
+    // declare createCategory: HasManyCreateAssociationMixin<Category, "id">
 }
 
 Statistic.init({

@@ -3,11 +3,12 @@ import { getReservationForDoctor, getReservations, getStatistics, updateReservat
 import { doctorProtect, superadmin } from "../middlewares/auth";
 const router = Router();
 
-router.get('/', getReservations);
 
 router.get("/doctor",doctorProtect, getReservationForDoctor);
 
 router.get("/statistics",superadmin, getStatistics);
+
+router.get('/:id',superadmin, getReservations);
 
 router.put('/doctor/:id',doctorProtect, updateReservationForDoctor)
 
