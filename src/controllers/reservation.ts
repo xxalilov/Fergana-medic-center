@@ -43,11 +43,13 @@ export const updateReservationForDoctor = asyncHandler(
     const reservation = await Reservation.findOne({
       where: { id: req.params.id },
     });
-    if (!reservation)
-      throw new BadRequestError("Berilgan Id orqali reservetsiya topilmadi.");
-    const statistic = await Statistic.findOne();
-    if (!statistic) await Statistic.create({ balance: 1 });
-    statistic?.update({ balance: statistic.balance + reservation.fee });
+    if (!reservation) throw new BadRequestError("Something went wrong.");
+    let statistic = await Statistic.findOne();
+    if (!statistic) {
+      statistic = await Statistic.create({ balance: 1 });
+      await statistic.save();
+    }
+    statistic.update({ balance: statistic.balance + reservation.fee });
     await reservation.update(req.body);
     await reservation.save();
 
@@ -87,8 +89,7 @@ export const updateReservation = asyncHandler(
     const reservation = await Reservation.findOne({
       where: { id: req.params.id },
     });
-    if (!reservation)
-      throw new BadRequestError("Berilgan Id orqali reservation topilmadi.");
+    if (!reservation) throw new BadRequestError("Something went wrong.");
     const user = await User.findOne({ where: { id: reservation.doctor } });
     if (!user) throw new NotFoundError("User not found.");
     const queue = user.soreQueue;

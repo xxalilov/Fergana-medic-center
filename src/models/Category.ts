@@ -1,35 +1,37 @@
-import {Model, DataTypes, ForeignKey} from "sequelize";
+import { Model, DataTypes, ForeignKey } from "sequelize";
 import slug from "slug";
 import sequelize from "../utils/db";
 import Statistic from "./Statistic";
 
 class Category extends Model {
-    declare id: string;
-    declare category: string;
-    declare slug: string;
-    // declare statisticId: ForeignKey<Statistic['id']>
+  declare id: string;
+  declare category: string;
+  declare slug: string;
 }
 
-Category.init({
+Category.init(
+  {
     id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
     },
     category: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     slug: {
-        type: DataTypes.STRING
-    }
-}, {
+      type: DataTypes.STRING,
+    },
+  },
+  {
     tableName: "category",
-    sequelize
-});
+    sequelize,
+  }
+);
 
 Category.beforeSave(async (category) => {
-    category.slug = slug(category.category);
-})
+  category.slug = slug(category.category);
+});
 
-export default Category
+export default Category;

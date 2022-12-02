@@ -7,10 +7,12 @@ import {
   User,
   Reservation,
   Statistic,
+  BadRequestError,
 } from "./controller";
 
 export const createSore = asyncHandler(async (req: Request, res: Response) => {
   const sore = await Sore.findOne({ where: { phone: req.body.phone } });
+  if (sore) throw new BadRequestError("Bemor allaqachon ro'yhatdan o'tgan.");
   const user = await User.findOne({ where: { id: req.params.id } });
   if (!user) throw new NotFoundError("User not found.");
   const soreCount = await Sore.count();
@@ -22,24 +24,15 @@ export const createSore = asyncHandler(async (req: Request, res: Response) => {
   req.body.type = user.profession;
   req.body.room = user.room;
 
-  let currentSore;
-  if (sore) {
-    const reservation = await sore.createReservation(req.body);
-    await reservation.save();
-    currentSore = sore;
-  } else {
-    const newSore = await Sore.create(req.body);
-    await newSore.save();
-    const statistic = await Statistic.findOne();
-    if (!statistic) await Statistic.create({ patients: 1 });
-    statistic?.update({ patients: statistic.patients + 1 });
-    const reservation = await newSore.createReservation(req.body);
-    await reservation.save();
-    currentSore = newSore;
-  }
-
+  const newSore = await Sore.create(req.body);
+  await newSore.save();
+  const statistic = await Statistic.findOne();
+  if (!statistic) await Statistic.create({ patients: 1 });
+  statistic?.update({ patients: statistic.patients + 1 });
+  const reservation = await newSore.createReservation(req.body);
+  await reservation.save();
   const data = await Sore.findOne({
-    where: { id: currentSore.id },
+    where: { id: newSore.id },
     include: [
       { model: Reservation, as: "reservation", where: { isPaid: false } },
     ],
@@ -150,7 +143,7 @@ export const getSore = asyncHandler(async (req: Request, res: Response) => {
 
 export const updateSore = asyncHandler(async (req: Request, res: Response) => {
   const sore = await Sore.findOne({ where: { id: req.params.id } });
-  if (!sore) throw new NotFoundError("Berilgan Id orqali bemor topilmadi.");
+  if (!sore) throw new NotFoundError("Something went wrong.");
 
   await sore.update(req.body);
   await sore.save();
@@ -163,7 +156,7 @@ export const updateSore = asyncHandler(async (req: Request, res: Response) => {
 
 export const deleteSore = asyncHandler(async (req: Request, res: Response) => {
   const sore = await Sore.findOne({ where: { id: req.params.id } });
-  if (!sore) throw new NotFoundError("Berilgan Id orqali bemor topilmadi.");
+  if (!sore) throw new NotFoundError("Something went wrong.");
   await sore.destroy();
 
   const statistic = await Statistic.findOne();
