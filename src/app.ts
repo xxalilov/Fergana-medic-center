@@ -15,6 +15,7 @@ import { userRoutes } from "./routes/user";
 import { categoryRoutes } from "./routes/category";
 import { soreRoutes } from "./routes/sore";
 import { reservationRoutes } from "./routes/reservation";
+import { roomRoutes } from "./routes/room";
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/sore", soreRoutes);
 app.use("/api/v1/reservation", reservationRoutes);
+app.use("/api/v1/room", roomRoutes);
 app.all(
   "*",
   asyncHandler(async () => {

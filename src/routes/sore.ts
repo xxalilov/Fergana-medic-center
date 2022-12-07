@@ -12,7 +12,7 @@ import {
 
 const router = Router();
 
-router.route("/").get(superadmin, getSores);
+router.route("/").get(superadmin, getSores).post(adminProtect, createSore);
 router.get("/cachier", adminProtect, getSoresForCachier);
 router.get("/doctor", doctorProtect, getSoresForDoctors);
 router
