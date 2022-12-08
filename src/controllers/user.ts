@@ -115,7 +115,7 @@ export const updateUserDetails = asyncHandler(
       req.body.password = await Password.toHash(req.body.password);
     }
 
-    if (user.role == "superadmin" && req.body.role) {
+    if (user.role == "superadmin" && req.body.role !== "superadmin") {
       throw new BadRequestError("You can't change Superadmin Role.");
     }
 
