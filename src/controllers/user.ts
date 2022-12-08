@@ -115,6 +115,10 @@ export const updateUserDetails = asyncHandler(
       req.body.password = await Password.toHash(req.body.password);
     }
 
+    if (user.role == "superadmin" && req.body.role) {
+      throw new BadRequestError("You can't change Superadmin Role.");
+    }
+
     if (req.file) {
       if (user.image) deleteFile(user.image);
       req.body.image = req.file.path;
