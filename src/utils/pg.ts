@@ -13,7 +13,6 @@ const db = async function () {
     foreignKey: "soreId",
     as: "sore",
   });
-
   try {
     await sequelize.sync({ force: false });
     console.log("Connected Postgres!");

@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import Room from "../models/Room";
 import {
   asyncHandler,
@@ -19,11 +20,48 @@ export const createRoom = asyncHandler(async (req: Request, res: Response) => {
 
 export const getRooms = asyncHandler(async (req: Request, res: Response) => {
   const query = req.query;
-  const room = await Room.findAll({ where: query });
+  const limit = Number(query.limit) || 3;
+  const page = Number(query.page) || 1;
+  let users, allPages: number;
+  let countData = 0;
+
+ if (query.isFull) {
+    const { count, rows } = await Room.findAndCountAll({
+      where: { isFull: query.isFull },
+      offset: limit * page - limit,
+      limit: limit,
+    });
+    countData = countData + count;
+    allPages = Math.ceil(count / limit);
+    users = rows;
+  } else if(req.query.notNull) {
+    const { count, rows } = await Room.findAndCountAll({
+      where: { patientsCount: {[Op.gt]: 0} },
+      offset: limit * page - limit,
+      limit: limit,
+    });
+    countData = countData + count;
+    allPages = Math.ceil(count / limit);
+    users = rows;
+  }
+  else {
+    const { count, rows } = await Room.findAndCountAll({
+      offset: limit * page - limit,
+      limit: limit,
+    });
+
+    countData = countData + count;
+
+    allPages = Math.ceil(count / limit);
+    users = rows;
+  }
 
   res.status(200).json({
     status: 200,
-    data: room,
+    allPages,
+    count: countData,
+    page,
+    data: users,
   });
 });
 
@@ -37,6 +75,18 @@ export const updateRoom = asyncHandler(async (req: Request, res: Response) => {
     data: room,
   });
 });
+
+export const updateRoomForAdmin = asyncHandler(async (req: Request, res: Response) => {
+  const room = await Room.findOne({ where: { id: req.params.id } });
+  if (!room) throw new NotFoundError("Berilgan id orqali xona topilmadi.");
+  await room.update({patientsCount: room.patientsCount-1, isFull: false});
+
+  res.status(200).json({
+    status: 200,
+    data: room,
+  });
+});
+
 
 export const deleteRoom = asyncHandler(async (req: Request, res: Response) => {
   const room = await Room.findOne({ where: { id: req.params.id } });

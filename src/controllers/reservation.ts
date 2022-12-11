@@ -1,3 +1,4 @@
+import RoomReservation from "../models/RoomReservation";
 import {
   asyncHandler,
   BadRequestError,
@@ -103,6 +104,31 @@ export const updateReservation = asyncHandler(
     res.status(200).json({
       status: 200,
       data: reservation,
+    });
+  }
+);
+
+export const updateRoomReservation = asyncHandler(
+  async (req: Request, res: Response) => {
+    const reservation = await RoomReservation.findOne({
+      where: { id: req.params.id },
+    });
+    if (!reservation) throw new BadRequestError("Something went wrong.");
+    let statistic = await Statistic.findOne();
+    if (!statistic) {
+      statistic = await Statistic.create({ balance: reservation.fee });
+      await statistic.save();
+    }
+    statistic.update({ balance: statistic.balance + reservation.fee });
+    await reservation.update(req.body);
+    await reservation.save();
+    await reservation.update(req.body);
+    await reservation.save();
+    const patient = await User.findOne({where: { id: reservation.soreId }});
+
+    res.status(200).json({
+      status: 200,
+      data: reservation
     });
   }
 );

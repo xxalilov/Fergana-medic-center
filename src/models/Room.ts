@@ -4,8 +4,10 @@ import sequelize from "../utils/db";
 class Room extends Model {
   declare id: string;
   declare roomNumber: string;
-  declare room_cost: string;
+  declare roomFee: number;
   declare isFull: boolean;
+  declare patientsCount: number;
+  declare maxPatientsCount: number;
 }
 
 Room.init(
@@ -20,7 +22,7 @@ Room.init(
       allowNull: false,
     },
     roomFee: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     isFull: {
@@ -31,6 +33,10 @@ Room.init(
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    maxPatientsCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   },
   {
     tableName: "room",
