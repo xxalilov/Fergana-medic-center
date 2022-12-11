@@ -92,11 +92,11 @@ export const createSoreToRoom = asyncHandler(async (req: Request, res: Response)
     if(!sore) {
       sore = await Sore.create(req.body);
       await sore.save();
-    req.body.soreId = sore.id;
     const statistic = await Statistic.findOne();
     if (!statistic) await Statistic.create({ patients: 1 });
     statistic?.update({ patients: statistic.patients + 1 });
     }
+    req.body.soreId = sore.id;
       const reservation = await RoomReservation.create(req.body)
       await reservation.save();
 
@@ -166,6 +166,7 @@ export const getSoresForCachier = asyncHandler(
     if (!sore) throw new NotFoundError("Bemor topilmadi.");
 
     const roomReservation = await RoomReservation.findAll({where: {soreId: sore.id, isPaid: false}});
+    console.log(roomReservation)
 
     res.status(200).json({
       status: 200,
