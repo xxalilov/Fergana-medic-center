@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userRoutes = void 0;
+const express_1 = require("express");
+const user_1 = require("../controllers/user");
+const file_1 = require("../utils/file");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+exports.userRoutes = router;
+router.post("/", auth_1.superadmin, file_1.upload.single("image"), user_1.createUser);
+router.get("/", auth_1.superadmin, user_1.getAllUsers);
+router.get("/admin/", auth_1.adminProtect, user_1.getUsersForAdmin);
+router.put("/", auth_1.protect, file_1.upload.single("image"), user_1.updateUsersLoginAndPassword);
+router.put("/:id", auth_1.superadmin, file_1.upload.single("image"), user_1.updateUserDetails);
+router.delete("/:id", auth_1.superadmin, user_1.deleteUser);

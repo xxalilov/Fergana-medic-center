@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.reservationRoutes = void 0;
+const express_1 = require("express");
+const reservation_1 = require("../controllers/reservation");
+const auth_1 = require("../middlewares/auth");
+const router = (0, express_1.Router)();
+exports.reservationRoutes = router;
+router.get("/doctor", auth_1.doctorProtect, reservation_1.getReservationForDoctor);
+router.get("/statistics", auth_1.superadmin, reservation_1.getStatistics);
+router.get("/:id", auth_1.superadmin, reservation_1.getReservations);
+router.put("/doctor/:id", auth_1.doctorProtect, reservation_1.updateReservationForDoctor);
+router.route("/room/:id").put(auth_1.adminProtect, reservation_1.updateRoomReservation);
+router.route("/:id").put(auth_1.adminProtect, reservation_1.updateReservation);
