@@ -9,6 +9,24 @@ import {
   jwt,
 } from "./controller";
 
+// SignUp User
+export const signup = asyncHandler(async (req: Request, res: Response) => {
+  const currentUser = await User.findOne({where: {login: req.body.login}});
+    if (currentUser) {
+        throw new BadRequestError("Bu foydalanuvchi allaqachon mavjud!");
+    }
+
+    const login = req.body.login;
+    const password = req.body.password;
+    const role = "user";
+
+    const user = await User.create({ login, password, role });
+
+    await user.save();
+    return sendTokenResponse(user, 201, res);
+});
+
+
 // SignIn User
 export const signin = asyncHandler(async (req: Request, res: Response) => {
   const currentUser = await User.findOne();
