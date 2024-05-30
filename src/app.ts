@@ -1,5 +1,6 @@
 import * as path from "path";
-import express, { json } from "express";
+import {join} from "path";
+import express, { json, static as static_ } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
@@ -38,12 +39,18 @@ app.use(
   express.static(path.join(__dirname, "../", "static", "uploads"))
 );
 
+app.use(static_(join(__dirname, "../client/build")));
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/sore", soreRoutes);
 app.use("/api/v1/reservation", reservationRoutes);
 app.use("/api/v1/room", roomRoutes);
+app.get("*", (req, res, next) => {
+    res.sendFile(join(__dirname, "../client/build/index.html"), (err) => {
+        next();
+    });
+});
 app.all(
   "*",
   asyncHandler(async () => {
